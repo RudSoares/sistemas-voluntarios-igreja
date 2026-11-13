@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: voluntarios-api
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/voluntarios_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:123456}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+
+server:
+  port: ${SERVER_PORT:8080}
+

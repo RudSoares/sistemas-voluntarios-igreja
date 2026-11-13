@@ -1,0 +1,24 @@
+# Java / Maven
+backend/target/
+backend/.locks/
+backend/.meta/
+backend/com/
+backend/io/
+backend/org/
+backend/tools/
+*.class
+
+# Node / frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env*
+!frontend/.env.example
+work/
+infra/docker/.env
+
+# Local secrets and editor files
+.env
+.idea/
+.vscode/
+*.iml
+Thumbs.db
