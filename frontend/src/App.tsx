@@ -15,6 +15,7 @@ const sections = [
 ] as const
 
 type SectionId = (typeof sections)[number]['id']
+type Theme = 'light' | 'dark'
 type VolunteerForm = Omit<VolunteerPayload, 'telefone' | 'email' | 'observacoes'> & {
   telefone: string
   email: string
@@ -64,6 +65,13 @@ function toPayload(form: VolunteerForm): VolunteerPayload {
 
 function App() {
   const [activeSection, setActiveSection] = useState<SectionId>('inicio')
+  const [theme, setTheme] = useState<Theme>(() => {
+    try {
+      return window.localStorage.getItem('voluntarios-theme') === 'dark' ? 'dark' : 'light'
+    } catch {
+      return 'light'
+    }
+  })
   const [volunteers, setVolunteers] = useState<Volunteer[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -91,6 +99,18 @@ function App() {
   useEffect(() => {
     void loadVolunteers()
   }, [loadVolunteers])
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    document.querySelector('meta[name="theme-color"]')?.setAttribute(
+      'content', theme === 'dark' ? '#101a17' : '#123b35',
+    )
+    try {
+      window.localStorage.setItem('voluntarios-theme', theme)
+    } catch {
+      // A aplicação permanece utilizável mesmo se o navegador bloquear o armazenamento local.
+    }
+  }, [theme])
 
   const currentSection = sections.find((section) => section.id === activeSection)!
   const activeCount = volunteers.filter((volunteer) => volunteer.ativo).length
@@ -176,7 +196,7 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" data-theme={theme}>
       <aside className="sidebar">
         <a className="brand" href="#voluntarios" onClick={() => setActiveSection('voluntarios')}>
           <span className="brand-mark" aria-hidden="true">V</span>
@@ -214,7 +234,19 @@ function App() {
       <main className="main-content">
         <header className="topbar">
           <div className="breadcrumb">Sistema <span>/</span> {currentSection.label}</div>
-          <div className="environment-label"><span /> Ambiente de desenvolvimento</div>
+          <div className="topbar-actions">
+            <button
+              aria-label={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
+              aria-pressed={theme === 'dark'}
+              className="theme-toggle"
+              onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')}
+              type="button"
+            >
+              <span aria-hidden="true">{theme === 'light' ? '☾' : '☀'}</span>
+              {theme === 'light' ? 'Modo escuro' : 'Modo claro'}
+            </button>
+            <div className="environment-label"><span /> Ambiente de desenvolvimento</div>
+          </div>
         </header>
 
         <section className="page-content" aria-labelledby="page-title">

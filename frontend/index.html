@@ -6,6 +6,14 @@
     <meta name="theme-color" content="#123b35" />
     <meta name="description" content="Sistema de gestão de voluntários e escalas da igreja." />
     <title>Gestão de voluntários</title>
+    <script>
+      try {
+        if (localStorage.getItem('voluntarios-theme') === 'dark') {
+          document.documentElement.dataset.theme = 'dark'
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#101a17')
+        }
+      } catch { /* O tema claro continua disponível quando o armazenamento está bloqueado. */ }
+    </script>
   </head>
   <body>
     <div id="root"></div>

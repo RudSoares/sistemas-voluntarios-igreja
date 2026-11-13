@@ -213,6 +213,140 @@ h1 { margin: 10px 0 8px; color: #183c35; font-family: Georgia, 'Times New Roman'
 .compact-empty h3 { margin: 0 0 5px; color: #4a5d50; font-size: 12px; }
 .compact-empty p { margin: 0 0 12px; color: #859188; font-size: 10px; }
 
+.topbar-actions { display: flex; align-items: center; gap: 19px; }
+.theme-toggle { display: inline-flex; min-height: 34px; align-items: center; gap: 7px; padding: 0 10px; border: 1px solid #e0e6df; border-radius: 8px; background: #fff; color: #41624d; cursor: pointer; font: inherit; font-size: 10px; font-weight: 650; transition: border-color .15s ease, background .15s ease; }
+.theme-toggle:hover { border-color: #c6a45c; background: #fbf8f0; }
+.theme-toggle > span { color: #ad8030; font-size: 16px; line-height: 1; }
+
+:root[data-theme='dark'] { color-scheme: dark; background: #101a17; color: #e2ebe5; }
+:root[data-theme='dark'] body { background: #101a17; color: #e2ebe5; }
+:root[data-theme='dark'] .main-content { background: #101a17; }
+:root[data-theme='dark'] .topbar { border-color: #293a32; background: rgba(21, 34, 29, .94); }
+:root[data-theme='dark'] .breadcrumb { color: #b6c4bb; }
+:root[data-theme='dark'] .breadcrumb span { color: #718078; }
+:root[data-theme='dark'] .environment-label { color: #a9b9ae; }
+:root[data-theme='dark'] h1 { color: #e4eee7; }
+:root[data-theme='dark'] h2,
+:root[data-theme='dark'] h3 { color: #e0eae3; }
+:root[data-theme='dark'] .page-intro { color: #b2c0b7; }
+:root[data-theme='dark'] .eyebrow { color: #d5ae5b; }
+:root[data-theme='dark'] .page-footer { border-color: #2b3b34; color: #94a49a; }
+:root[data-theme='dark'] .list-panel,
+:root[data-theme='dark'] .volunteer-form,
+:root[data-theme='dark'] .ministries-list-panel,
+:root[data-theme='dark'] .ministries-detail-panel,
+:root[data-theme='dark'] .ministry-subsection,
+:root[data-theme='dark'] .schedule-add-form,
+:root[data-theme='dark'] .dashboard-stat,
+:root[data-theme='dark'] .theme-toggle { border-color: #2b4036; background: #192722; color: #e0e9e3; }
+:root[data-theme='dark'] .dashboard-stat:hover { border-color: #57765c; background: #1d3028; }
+:root[data-theme='dark'] .dashboard-stat-symbol { background: #263c31; color: #d4b05e; }
+:root[data-theme='dark'] .dashboard-stat-label,
+:root[data-theme='dark'] .dashboard-section-heading h2,
+:root[data-theme='dark'] .ministries-panel-heading h2,
+:root[data-theme='dark'] .ministry-detail-heading h2,
+:root[data-theme='dark'] .ministry-subsection-heading h3 { color: #e0eae3; }
+:root[data-theme='dark'] .dashboard-upcoming { color: #d7e2db; }
+:root[data-theme='dark'] .dashboard-section-heading,
+:root[data-theme='dark'] .ministries-panel-heading,
+:root[data-theme='dark'] .ministry-detail-heading,
+:root[data-theme='dark'] .form-actions { border-color: #2b3d34; }
+:root[data-theme='dark'] .dashboard-event,
+:root[data-theme='dark'] .event-card,
+:root[data-theme='dark'] .schedule-assignment,
+:root[data-theme='dark'] .volunteers-table td { border-color: #2b3b34; }
+:root[data-theme='dark'] .dashboard-event strong,
+:root[data-theme='dark'] .volunteer-name,
+:root[data-theme='dark'] .membership-copy strong,
+:root[data-theme='dark'] .ministry-role-item > strong,
+:root[data-theme='dark'] .assignment-person strong { color: #e0eae3; }
+:root[data-theme='dark'] .dashboard-event > div > span,
+:root[data-theme='dark'] .dashboard-event-date,
+:root[data-theme='dark'] .event-main p,
+:root[data-theme='dark'] .event-main small,
+:root[data-theme='dark'] .assignment-person > span,
+:root[data-theme='dark'] .membership-copy small,
+:root[data-theme='dark'] .ministries-panel-heading span,
+:root[data-theme='dark'] .ministry-detail-heading p,
+:root[data-theme='dark'] .ministry-subsection-heading span { color: #adbbb2; }
+:root[data-theme='dark'] .event-date { border-color: #3c5143; background: #21352a; color: #e4c477; }
+:root[data-theme='dark'] .volunteers-table th { border-color: #2b3b34; background: #1d2d26; color: #b0beb5; }
+:root[data-theme='dark'] .volunteers-table td { color: #c3d0c8; }
+:root[data-theme='dark'] .volunteers-table tbody tr:hover { background: #1d2d26; }
+:root[data-theme='dark'] .field > span,
+:root[data-theme='dark'] .field legend,
+:root[data-theme='dark'] .confirmation-field { color: #c4d1c8; }
+:root[data-theme='dark'] .field input,
+:root[data-theme='dark'] .field textarea,
+:root[data-theme='dark'] .field select,
+:root[data-theme='dark'] .confirmation-field select,
+:root[data-theme='dark'] .compact-add-form input,
+:root[data-theme='dark'] .role-edit-form input,
+:root[data-theme='dark'] .custom-day-entry input,
+:root[data-theme='dark'] .icon-button,
+:root[data-theme='dark'] .search-field,
+:root[data-theme='dark'] .availability-option { border-color: #3a5044; background: #14211b; color: #e2ebe5; }
+:root[data-theme='dark'] .field input::placeholder,
+:root[data-theme='dark'] .field textarea::placeholder,
+:root[data-theme='dark'] .custom-day-entry input::placeholder,
+:root[data-theme='dark'] .search-field input::placeholder { color: #91a096; }
+:root[data-theme='dark'] .field input:focus,
+:root[data-theme='dark'] .field textarea:focus,
+:root[data-theme='dark'] .field select:focus,
+:root[data-theme='dark'] .custom-day-entry input:focus { border-color: #b8964c; box-shadow: 0 0 0 3px rgba(193, 142, 54, .17); }
+:root[data-theme='dark'] .search-field input { color: #e2ebe5; }
+:root[data-theme='dark'] .secondary-button { border-color: #3c5547; background: #1d3027; color: #cce0d1; }
+:root[data-theme='dark'] .secondary-button:hover { border-color: #718e65; background: #263d30; }
+:root[data-theme='dark'] .primary-button { background: #32765b; color: #fff; }
+:root[data-theme='dark'] .primary-button:hover { background: #3b8967; }
+:root[data-theme='dark'] .theme-toggle { border-color: #4b5d4f; background: #1d3027; color: #e3d29e; }
+:root[data-theme='dark'] .theme-toggle:hover { border-color: #c29a43; background: #29372a; }
+:root[data-theme='dark'] .theme-toggle > span { color: #e6c36b; }
+:root[data-theme='dark'] .text-button { color: #a9d1b0; }
+:root[data-theme='dark'] .text-button:hover { color: #f0cf79; }
+:root[data-theme='dark'] .text-danger { color: #e39b8d !important; }
+:root[data-theme='dark'] .availability-tag,
+:root[data-theme='dark'] .day-chip,
+:root[data-theme='dark'] .ministry-list-item.is-selected,
+:root[data-theme='dark'] .schedule-shift { background: #263b2e; color: #c7dfa9; }
+:root[data-theme='dark'] .availability-option.is-selected { border-color: #748f59; background: #2a402c; color: #d5e9ae; }
+:root[data-theme='dark'] .ministry-list-item { color: #d8e4dc; }
+:root[data-theme='dark'] .ministry-list-copy small,
+:root[data-theme='dark'] .ministry-list-arrow,
+:root[data-theme='dark'] .subsection-empty,
+:root[data-theme='dark'] .section-hint,
+:root[data-theme='dark'] .ministries-list-empty p { color: #a9b8ae; }
+:root[data-theme='dark'] .ministry-list-item:hover { background: #22352b; }
+:root[data-theme='dark'] .ministry-list-mark,
+:root[data-theme='dark'] .volunteer-avatar,
+:root[data-theme='dark'] .empty-icon { background: #293d30; color: #dbbd70; }
+:root[data-theme='dark'] .ministry-role-item,
+:root[data-theme='dark'] .ministry-membership-item,
+:root[data-theme='dark'] .membership-add-form,
+:root[data-theme='dark'] .schedule-assignment { border-color: #2f4338; background: #1c2b24; }
+:root[data-theme='dark'] .membership-add-form .field select { background: #14211b; }
+:root[data-theme='dark'] .status-active { background: #28432e; color: #a9dbad; }
+:root[data-theme='dark'] .status-active::before { background: #83c887; }
+:root[data-theme='dark'] .status-inactive { background: #343a36; color: #c0c7c2; }
+:root[data-theme='dark'] .status-inactive::before { background: #9fa9a1; }
+:root[data-theme='dark'] .alert-error { border-color: #663d38; background: #352522; color: #f0b0a5; }
+:root[data-theme='dark'] .alert-success { border-color: #38563d; background: #203428; color: #b5d9b0; }
+:root[data-theme='dark'] .availability-warning { color: #e4c477; }
+:root[data-theme='dark'] .schedule-hint { background: #202e27; color: #b4c1b8; }
+:root[data-theme='dark'] .empty-state h2,
+:root[data-theme='dark'] .compact-empty h3 { color: #e0eae3; }
+:root[data-theme='dark'] .empty-state p,
+:root[data-theme='dark'] .compact-empty p,
+:root[data-theme='dark'] .list-message,
+:root[data-theme='dark'] .muted-value { color: #a9b8ae; }
+:root[data-theme='dark'] .summary-copy,
+:root[data-theme='dark'] .summary-copy strong { color: #bfcdc3; }
+:root[data-theme='dark'] .volunteer-email { color: #a8c1b1; }
+:root[data-theme='dark'] .volunteer-email:hover { color: #edcd76; }
+:root[data-theme='dark'] .availability-list .availability-tag { color: #c3dba8; }
+:root[data-theme='dark'] .day-chip button { color: #c3d8c6; }
+:root[data-theme='dark'] ::selection { background: #526d4c; color: #fff; }
+
 @media (max-width: 960px) {
   .sidebar { width: 220px; }
   .main-content { margin-left: 220px; }
@@ -284,4 +418,7 @@ h1 { margin: 10px 0 8px; color: #183c35; font-family: Georgia, 'Times New Roman'
   .dashboard-section-heading { align-items: flex-start; flex-direction: column; }
   .dashboard-event { grid-template-columns: 42px minmax(0, 1fr); }
   .dashboard-event .text-button { grid-column: 2; justify-self: start; }
+  .topbar-actions { gap: 8px; }
+  .theme-toggle { min-height: 32px; padding: 0 8px; font-size: 9px; }
+  .environment-label { display: none; }
 }
