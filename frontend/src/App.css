@@ -346,6 +346,66 @@ h1 { margin: 10px 0 8px; color: #183c35; font-family: Georgia, 'Times New Roman'
 :root[data-theme='dark'] .availability-list .availability-tag { color: #c3dba8; }
 :root[data-theme='dark'] .day-chip button { color: #c3d8c6; }
 :root[data-theme='dark'] ::selection { background: #526d4c; color: #fff; }
+.logout-button { display: flex; width: 100%; min-height: 42px; align-items: center; gap: 10px; margin-top: 13px; padding: 0 12px; border: 1px solid #31564e; border-radius: 9px; background: transparent; color: #c6d9d1; cursor: pointer; font: inherit; font-size: 11px; text-align: left; }
+.logout-button:hover { border-color: #e5b75e; background: #1c4a42; color: #fff; }
+.login-page { position: relative; display: grid; min-height: 100vh; place-items: center; padding: 24px; background: radial-gradient(circle at 20% 15%, #e7efe5, transparent 34%), #f7f8f5; }
+.login-theme-toggle { position: absolute; top: 22px; right: 24px; }
+.login-card { width: min(100%, 430px); padding: 36px; border: 1px solid #e3e9e1; border-radius: 18px; background: #fff; box-shadow: 0 22px 70px rgba(23, 59, 46, .12); }
+.login-brand-mark { display: grid; width: 50px; height: 50px; place-items: center; margin-bottom: 22px; border-radius: 15px; background: #e5b75e; color: #123b35; font-family: Georgia, serif; font-size: 27px; font-weight: 700; }
+.login-card h1 { margin: 9px 0; font-size: 34px; }
+.login-card > p { margin: 0 0 23px; color: #748078; font-size: 12px; line-height: 1.6; }
+.login-card form { display: grid; gap: 15px; }
+.login-card form .primary-button { width: 100%; margin-top: 4px; }
+.login-footnote { display: block; margin-top: 22px; color: #89968d; font-size: 10px; text-align: center; }
+.platform-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.organization-list { margin-top: 15px; }
+.organization-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 15px; padding: 14px 17px; border-bottom: 1px solid #edf0ec; }
+.organization-row:last-child { border-bottom: 0; }
+.organization-row > div { display: grid; gap: 4px; }
+.organization-row strong { color: #354b3e; font-size: 11px; }
+.organization-row > div > span { color: #7c8980; font-size: 10px; }
+.organization-actions { display: flex; gap: 6px; }
+.portal-shell { min-height: 100vh; background: #f7f8f5; }
+.portal-header { display: flex; min-height: 76px; align-items: center; justify-content: space-between; padding: 0 clamp(20px, 6vw, 76px); border-bottom: 1px solid #e6eae5; background: #fff; }
+.portal-header .brand { margin: 0; color: #294039; }
+.portal-header > div { display: flex; align-items: center; gap: 14px; }
+.portal-greeting { color: #59675f; font-size: 11px; }
+.portal-content { width: min(100%, 1020px); margin: 0 auto; padding: 42px 24px; }
+.portal-section { margin-bottom: 15px; padding: 20px; border: 1px solid #e6eae5; border-radius: 12px; background: #fff; }
+.portal-section-heading { margin-bottom: 13px; padding-bottom: 12px; border-bottom: 1px solid #edf0ec; }
+.portal-section-heading h2 { margin: 5px 0; color: #294039; font-family: Georgia, 'Times New Roman', serif; font-size: 20px; font-weight: 500; }
+.portal-section-heading p { margin: 5px 0 0; color: #7b8980; font-size: 10px; }
+.portal-assignment-list { display: grid; }
+.portal-assignment { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px 0; border-bottom: 1px solid #edf0ec; }
+.portal-assignment:last-child { border-bottom: 0; }
+.portal-event-date { color: #65845d; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+.portal-assignment-copy { display: grid; gap: 4px; }
+.portal-assignment-copy strong { color: #354b3e; font-size: 12px; }
+.portal-assignment-copy span { color: #7c8980; font-size: 10px; text-transform: capitalize; }
+.portal-confirm-actions { display: flex; align-items: center; gap: 4px; }
+.portal-confirm-actions .text-button { padding: 5px; }
+.portal-availability { display: flex; flex-wrap: wrap; gap: 7px; margin: 14px 0; }
+.portal-custom-day { margin-top: 12px; }
+:root[data-theme='dark'] .login-page { background: radial-gradient(circle at 20% 15%, #263b2e, transparent 36%), #101a17; }
+:root[data-theme='dark'] .login-card,
+:root[data-theme='dark'] .portal-section { border-color: #2b4036; background: #192722; }
+:root[data-theme='dark'] .login-card h1,
+:root[data-theme='dark'] .portal-section-heading h2,
+:root[data-theme='dark'] .portal-assignment-copy strong,
+:root[data-theme='dark'] .organization-row strong { color: #e2ebe5; }
+:root[data-theme='dark'] .login-card > p,
+:root[data-theme='dark'] .login-footnote,
+:root[data-theme='dark'] .portal-section-heading p,
+:root[data-theme='dark'] .portal-assignment-copy span,
+:root[data-theme='dark'] .organization-row > div > span,
+:root[data-theme='dark'] .portal-greeting { color: #b0beb5; }
+:root[data-theme='dark'] .portal-header { border-color: #2b3b34; background: #15221d; }
+:root[data-theme='dark'] .portal-header .brand { color: #e0e9e3; }
+:root[data-theme='dark'] .portal-assignment,
+:root[data-theme='dark'] .portal-section-heading,
+:root[data-theme='dark'] .organization-row { border-color: #2b3b34; }
+:root[data-theme='dark'] .portal-event-date { color: #d5bb73; }
+:root[data-theme='dark'] .logout-button { border-color: #35574d; color: #c7d9d1; }
 
 @media (max-width: 960px) {
   .sidebar { width: 220px; }
@@ -421,4 +481,17 @@ h1 { margin: 10px 0 8px; color: #183c35; font-family: Georgia, 'Times New Roman'
   .topbar-actions { gap: 8px; }
   .theme-toggle { min-height: 32px; padding: 0 8px; font-size: 9px; }
   .environment-label { display: none; }
+  .platform-grid { grid-template-columns: 1fr; }
+  .login-card { padding: 26px 21px; }
+  .login-theme-toggle { top: 12px; right: 12px; }
+  .portal-header { padding: 12px 16px; }
+  .portal-header > div { align-items: flex-end; flex-direction: column; gap: 5px; }
+  .portal-greeting { max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .portal-content { padding: 28px 16px; }
+  .portal-section { padding: 15px; }
+  .portal-assignment { grid-template-columns: 42px minmax(0, 1fr); align-items: start; }
+  .portal-confirm-actions { grid-column: 2; flex-wrap: wrap; }
+  .organization-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .organization-row > .text-button { grid-column: 2; justify-self: end; }
+  .organization-actions { grid-column: 1 / -1; justify-content: flex-end; }
 }

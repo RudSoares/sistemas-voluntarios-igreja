@@ -7,6 +7,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ServiceEventRepository extends JpaRepository<ServiceEvent, Long> {
     List<ServiceEvent> findAllByOrderByDataEventoAscHorarioAsc();
+    List<ServiceEvent> findAllByChurch_IdOrderByDataEventoAscHorarioAsc(Long churchId);
+    Optional<ServiceEvent> findByIdAndChurch_Id(Long id, Long churchId);
     List<ServiceEvent> findAllByStatusAndDataEventoGreaterThanEqualOrderByDataEventoAscHorarioAsc(EventStatus status, LocalDate from);
+    List<ServiceEvent> findAllByChurch_IdAndStatusAndDataEventoGreaterThanEqualOrderByDataEventoAscHorarioAsc(Long churchId, EventStatus status, LocalDate from);
     Optional<ServiceEvent> findFirstByStatusAndDataEventoGreaterThanEqualOrderByDataEventoAscHorarioAsc(EventStatus status, LocalDate from);
 }

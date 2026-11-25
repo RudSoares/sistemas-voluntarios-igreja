@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/v1/schedules")
@@ -22,11 +23,13 @@ public class ScheduleController {
     public ScheduleController(ScheduleService scheduleService) { this.scheduleService = scheduleService; }
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('CHURCH_ADMIN','VOLUNTEER')")
     public List<ScheduleAssignmentResponse> list(@RequestParam(required = false) Long eventId) {
         return scheduleService.listAssignments(eventId);
     }
 
     @PostMapping("/events/{eventId}/assignments")
+    @PreAuthorize("hasRole('CHURCH_ADMIN')")
     public ResponseEntity<ScheduleAssignmentResponse> create(
             @PathVariable Long eventId, @Valid @RequestBody ScheduleAssignmentRequest request) {
         ScheduleAssignmentResponse response = scheduleService.createAssignment(eventId, request);
@@ -35,14 +38,20 @@ public class ScheduleController {
     }
 
     @PatchMapping("/assignments/{assignmentId}/confirmation")
+    @PreAuthorize("hasAnyRole('CHURCH_ADMIN','VOLUNTEER')")
     public ScheduleAssignmentResponse updateConfirmation(
             @PathVariable Long assignmentId, @Valid @RequestBody ConfirmationStatusRequest request) {
         return scheduleService.updateConfirmation(assignmentId, request.statusConfirmacao());
     }
 
     @DeleteMapping("/assignments/{assignmentId}")
+    @PreAuthorize("hasRole('CHURCH_ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long assignmentId) {
         scheduleService.deleteAssignment(assignmentId);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/mine")
+    @PreAuthorize("hasRole('VOLUNTEER')")
+    public List<ScheduleAssignmentResponse> mine() { return scheduleService.listMyAssignments(); }
 }

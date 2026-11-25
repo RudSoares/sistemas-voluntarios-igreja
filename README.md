@@ -120,16 +120,30 @@ Para vincular, envie `{"volunteerId": 1, "ministryRoleId": 2}`. O servidor respo
 
 O corpo da escala é `{"ministryId":1,"ministryRoleId":2,"volunteerId":3}`. A API impede escalar a mesma pessoa duas vezes no evento e exige que ela esteja ativa e vinculada à função. Divergência de disponibilidade retorna um alerta sem bloquear a escala. Veja o detalhe no [guia de estudo](docs/GUIA_ESTUDO_MODULOS.md).
 
-## Acesso temporário para desenvolvimento
+## Autenticação e administração
 
-As rotas `/api/v1/volunteers/**`, `/api/v1/ministries/**`, `/api/v1/events/**` e `/api/v1/schedules/**` estão temporariamente abertas para permitir testar a interface. CORS aceita apenas `http://localhost:5173`. As demais rotas continuam protegidas. Antes de publicar o sistema, o acesso aberto e a configuração de CORS de desenvolvimento devem ser substituídos pela autenticação e autorização definitivas.
+| Método | Rota | Acesso |
+|---|---|---|
+| `POST` | `/api/v1/auth/login` | Público; recebe e-mail/senha e retorna JWT |
+| `GET`, `POST` | `/api/v1/churches` | SUPER_ADMIN lista e cadastra igrejas |
+| `PUT`, `PATCH` | `/api/v1/churches/{id}` e `/status` | SUPER_ADMIN edita ou ativa/inativa |
+| `POST` | `/api/v1/churches/{id}/admins` | SUPER_ADMIN cria CHURCH_ADMIN |
+| `GET`, `POST` | `/api/v1/branches` | CHURCH_ADMIN lista/cria filiais da sua igreja |
+| `PUT`, `PATCH` | `/api/v1/branches/{id}` e `/status` | CHURCH_ADMIN edita/ativa filial da própria igreja |
+| `GET`, `PATCH` | `/api/v1/volunteers/me` e `/me/availability` | VOLUNTEER consulta perfil e edita disponibilidade |
+| `GET` | `/api/v1/schedules/mine` | VOLUNTEER consulta suas escalas |
+
+Use o header `Authorization: Bearer <token>` nas rotas protegidas. O frontend o inclui automaticamente após login. As senhas do seed local são `admin123` para `admin@sistema.com` e `poiema123` para `lider@poiema.com`. Configure senhas próprias com `SEED_SUPER_ADMIN_PASSWORD` e `SEED_CHURCH_ADMIN_PASSWORD`; defina também `JWT_SECRET` forte e diferente antes de publicar. O seed só cria as contas quando `app_users` está vazio; `SEED_ENABLED=false` desativa o processo.
+
+CORS aceita somente `http://localhost:5173`. Só login e health check são públicos. Os demais endpoints exigem JWT e as regras de acesso por perfil também são aplicadas no backend. Dados antigos são migrados para a igreja inicial Igreja Poiema; a configuração MySQL local permanece intacta.
 
 ## Verificação manual
 
 1. Inicie o MySQL e a API.
-2. No Insomnia, envie um `POST /api/v1/volunteers` com o exemplo acima e um `POST /api/v1/ministries` com `{"nome":"Louvor","descricao":"Música e adoração"}`.
-3. Crie uma função com `POST /api/v1/ministries/{id}/roles` e cadastre um vínculo em `/api/v1/ministries/{id}/memberships`.
+2. A primeira execução aplica as migrações e cria os usuários iniciais se a tabela estiver vazia. Faça login via `POST /api/v1/auth/login` com `lider@poiema.com` / `poiema123`.
+3. Configure `Authorization: Bearer <token>` no Insomnia; então crie um voluntário, ministério, função e vínculo.
 4. Crie um evento futuro em `POST /api/v1/events` e escale em `POST /api/v1/schedules/events/{eventId}/assignments`.
-5. Abra o frontend para usar a programação, as escalas e a visão geral.
+5. Faça login como o voluntário, se criou uma senha inicial, e consulte `GET /api/v1/schedules/mine`.
+6. Abra o frontend e entre com uma das contas iniciais para usar as telas correspondentes ao perfil.
 
-Não rodei testes automatizados nem build nesta etapa. As rotas e o fluxo manual acima servem como verificação inicial depois que os serviços estiverem em execução.
+O guia de estudo documenta a matriz de papéis e um roteiro manual para verificar o escopo de igreja e as permissões de cada perfil.

@@ -2,36 +2,40 @@ package br.com.igreja.voluntarios.security;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
+    @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
+
     @Bean
-    SecurityFilterChain applicationSecurity(HttpSecurity http) throws Exception {
+    SecurityFilterChain applicationSecurity(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
         return http
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint((request, response, exception) ->
+                        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Autenticação necessária.")))
+                .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/v1/volunteers", "/api/v1/volunteers/**").permitAll()
-                        .requestMatchers("/api/v1/ministries", "/api/v1/ministries/**").permitAll()
-                        .requestMatchers("/api/v1/events", "/api/v1/events/**").permitAll()
-                        .requestMatchers("/api/v1/schedules", "/api/v1/schedules/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/health").permitAll()
                         .anyRequest().authenticated())
-                .csrf(csrf -> csrf.ignoringRequestMatchers(
-                        "/api/v1/volunteers", "/api/v1/volunteers/**",
-                        "/api/v1/ministries", "/api/v1/ministries/**",
-                        "/api/v1/events", "/api/v1/events/**",
-                        "/api/v1/schedules", "/api/v1/schedules/**"))
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .httpBasic(Customizer.withDefaults())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
@@ -45,14 +49,7 @@ public class SecurityConfiguration {
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/v1/volunteers", configuration);
-        source.registerCorsConfiguration("/api/v1/volunteers/**", configuration);
-        source.registerCorsConfiguration("/api/v1/ministries", configuration);
-        source.registerCorsConfiguration("/api/v1/ministries/**", configuration);
-        source.registerCorsConfiguration("/api/v1/events", configuration);
-        source.registerCorsConfiguration("/api/v1/events/**", configuration);
-        source.registerCorsConfiguration("/api/v1/schedules", configuration);
-        source.registerCorsConfiguration("/api/v1/schedules/**", configuration);
+        source.registerCorsConfiguration("/**", configuration);
         return source;
     }
 }

@@ -10,4 +10,5 @@ public record ServiceEventRequest(
         @NotNull LocalDate dataEvento,
         @NotNull LocalTime horario,
         @NotBlank String turnoOuDiaSemana,
-        String observacoes) { }
+        String observacoes,
+        Long branchId) { }

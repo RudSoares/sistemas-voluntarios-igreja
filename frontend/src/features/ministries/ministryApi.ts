@@ -27,6 +27,7 @@ export type VolunteerMinistry = {
 export type MinistryPayload = {
   nome: string
   descricao: string | null
+  branchId?: number | null
 }
 
 export const ministryApi = {

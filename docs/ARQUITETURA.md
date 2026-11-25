@@ -25,7 +25,7 @@ infra/          configuração local e implantação
 
 Os pacotes e tabelas seguem os domínios de voluntários, ministérios, agenda e escalas. A associação voluntário-ministério é muitos-para-muitos. Dados e regras de autorização são verificados no backend.
 
-Os módulos usam as migrações Flyway V1 a V3. O `ddl-auto: update` local foi mantido conforme solicitado. As APIs de voluntários, ministérios, eventos e escalas ficam temporariamente abertas para desenvolvimento local; CORS permite somente `http://localhost:5173`. Essa exceção precisa ser removida ao implementar a autenticação definitiva.
+Os módulos usam as migrações Flyway V1 a V5. O `ddl-auto: update` local foi mantido conforme solicitado. Login e health check são públicos; as APIs operacionais requerem JWT. O CORS aceita somente `http://localhost:5173`. A autorização por papel e o filtro por igreja são aplicados no backend.
 
 ## Segurança desde o início
 

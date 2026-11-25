@@ -3,16 +3,20 @@ package br.com.igreja.voluntarios.volunteer;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import br.com.igreja.voluntarios.organization.Branch;
+import br.com.igreja.voluntarios.organization.Church;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
+import jakarta.persistence.ManyToOne;
 
 @Entity
 @Table(name = "volunteers")
@@ -44,6 +48,14 @@ public class Volunteer {
     @Column(name = "observations", columnDefinition = "TEXT")
     private String observacoes;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "church_id", nullable = false, foreignKey = @ForeignKey(name = "fk_volunteer_church"))
+    private Church church;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id", foreignKey = @ForeignKey(name = "fk_volunteer_branch"))
+    private Branch branch;
+
     protected Volunteer() {
         // Construtor exigido pelo JPA.
     }
@@ -53,8 +65,12 @@ public class Volunteer {
             String telefone,
             String email,
             Set<String> disponibilidadeDias,
-            String observacoes) {
+            String observacoes,
+            Church church,
+            Branch branch) {
         updateDetails(nomeCompleto, telefone, email, disponibilidadeDias, observacoes);
+        this.church = church;
+        this.branch = branch;
     }
 
     public void updateDetails(
@@ -103,6 +119,9 @@ public class Volunteer {
     public String getObservacoes() {
         return observacoes;
     }
+
+    public Church getChurch() { return church; }
+    public Branch getBranch() { return branch; }
 
     private static String blankToNull(String value) {
         if (value == null || value.isBlank()) {

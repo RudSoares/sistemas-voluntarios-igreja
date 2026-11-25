@@ -5,6 +5,9 @@ Estas perguntas não bloqueiam a organização do repositório e a documentaçã
 ## Pessoas e acesso
 
 - [x] Campos do MVP definidos: nome completo obrigatório; telefone, e-mail, disponibilidade e observações opcionais; status ativo começa como verdadeiro.
+- [x] Perfis definidos: SUPER_ADMIN, CHURCH_ADMIN e VOLUNTEER; autenticação por JWT e senhas com BCrypt.
+- [x] Voluntário pode receber conta de acesso no cadastro; essa conta usa o e-mail e senha inicial informados pelo administrador.
+- [x] Cada conta operacional pertence a uma igreja, e as consultas/escritas operacionais são limitadas à igreja autenticada.
 - [ ] Há menores de idade ou dados sensíveis que exijam regras adicionais de privacidade?
 - [ ] Quem cria contas e associa voluntários a ministérios? Haverá auto cadastro?
 - [ ] O voluntário pode editar seus próprios dados? Quais campos?
@@ -40,6 +43,9 @@ Estas perguntas não bloqueiam a organização do repositório e a documentaçã
 - [ ] Como escolher suplentes? Substituições precisam de aprovação e confirmação?
 
 ## Operação
+
+- [x] Organização inicial: igreja matriz com zero ou mais filiais/congregações; filial aponta para a igreja e pode ser opcional no cadastro operacional.
+- [x] Contas seed para desenvolvimento criadas somente quando não existem usuários. Senhas de seed são configuráveis por ambiente e devem ser alteradas antes de implantação.
 
 - [ ] Notificações por e-mail, WhatsApp ou push entram no MVP?
 - [ ] Existe preferência de hospedagem e orçamento?

@@ -16,7 +16,7 @@ export type ServiceEvent = {
   status: EventStatus
 }
 
-export type ServiceEventPayload = Omit<ServiceEvent, 'id' | 'status'>
+export type ServiceEventPayload = Omit<ServiceEvent, 'id' | 'status'> & { branchId?: number | null }
 
 export type ScheduleAssignment = {
   id: number
@@ -47,6 +47,7 @@ export const eventApi = {
 
 export const scheduleApi = {
   list: (eventId?: number) => request<ScheduleAssignment[]>(eventId ? `${SCHEDULES_PATH}?eventId=${eventId}` : SCHEDULES_PATH),
+  listMine: () => request<ScheduleAssignment[]>(SCHEDULES_PATH + '/mine'),
   create: (eventId: number, ministryId: number, ministryRoleId: number, volunteerId: number) =>
     request<ScheduleAssignment>(`${SCHEDULES_PATH}/events/${eventId}/assignments`,
       jsonRequest('POST', { ministryId, ministryRoleId, volunteerId })),

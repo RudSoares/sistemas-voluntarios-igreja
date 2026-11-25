@@ -20,5 +20,8 @@ public record VolunteerRequest(
 
         Set<@NotBlank @Size(max = 40) String> disponibilidadeDias,
 
-        String observacoes) {
+        String observacoes,
+        Long branchId,
+        @Size(max = 72, message = "A senha inicial deve ter no máximo 72 caracteres.")
+        String senhaInicial) {
 }

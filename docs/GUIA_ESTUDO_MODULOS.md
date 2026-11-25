@@ -182,7 +182,71 @@ Exemplo de escala: `POST /api/v1/schedules/events/1/assignments` com `{"ministry
 
 ## Dashboard e execução local
 
-O Dashboard abre na aba inicial e busca dados ao entrar ou quando se seleciona “Atualizar dados”. Para exercitar o fluxo completo, crie voluntários e ministérios, adicione funções e vínculos, cadastre um evento futuro e então monte sua escala. As migrações `V1`, `V2` e `V3` criam o esquema inicial e preservam os dados já existentes. `application.yaml` mantém banco `voluntarios_db`, senha local `123456` e `ddl-auto: update`.
+O Dashboard abre na aba inicial e busca dados ao entrar ou quando se seleciona “Atualizar dados”. Para exercitar o fluxo completo, crie voluntários e ministérios, adicione funções e vínculos, cadastre um evento futuro e então monte sua escala. As migrações `V1` a `V5` criam o esquema inicial, atribuem os dados antigos à igreja inicial e ajustam a unicidade de nomes de ministérios para cada igreja. `application.yaml` mantém banco `voluntarios_db`, senha local `123456` e `ddl-auto: update`.
+
+## Identidade, autenticação e autorização
+
+### Modelo
+
+- `Church` representa a igreja matriz e contém nome, CNPJ opcional, cidade, estado e status ativo.
+- `Branch` representa uma filial/congregação e sempre aponta para uma `Church`.
+- `AppUser` (tabela `app_users`) guarda nome, e-mail único, hash de senha, perfil, status e relações opcionais com igreja, filial e voluntário.
+- Os papéis são `SUPER_ADMIN`, `CHURCH_ADMIN` e `VOLUNTEER`.
+- Voluntários, ministérios, eventos e escalas têm igreja obrigatória e filial opcional. O vínculo voluntário-ministério herda o escopo pela igreja do ministério e do voluntário.
+
+### Fluxo JWT e BCrypt
+
+1. O formulário `LoginPage.tsx` chama `POST /api/v1/auth/login` com e-mail e senha.
+2. `AuthService` procura a conta e usa `PasswordEncoder.matches` para comparar a senha digitada ao hash BCrypt; a senha original nunca é salva.
+3. Em sucesso, `JwtTokenService` assina um JWT HS256 com prazo de expiração. A resposta inclui token, nome, e-mail, papel e IDs de igreja/filial.
+4. `AuthContext.tsx` mantém perfil e token no `localStorage`. `apiClient.ts` acrescenta `Authorization: Bearer <token>` em cada chamada protegida.
+5. `JwtAuthenticationFilter` valida assinatura e expiração, recarrega o usuário ativo e estabelece o principal. O papel da autorização é carregado do banco, então desativação/alteração do usuário passa a valer mesmo antes de o token expirar.
+6. `SecurityConfiguration` torna a API stateless, libera somente o login e health check e aplica autenticação nas demais rotas. `@PreAuthorize` limita cada área ao papel permitido.
+
+O JWT é assinado com `JWT_SECRET` e dura por padrão oito horas (`JWT_EXPIRATION_SECONDS`). O segredo padrão existe apenas para desenvolvimento local; configure um segredo forte por variável de ambiente fora do desenvolvimento. Logout remove o token e o perfil do navegador; como o backend é stateless, o token deixa de ser aceito quando expira ou quando a conta/igreja é desativada.
+
+### Matriz resumida de acesso
+
+| Perfil | Acesso |
+|---|---|
+| `SUPER_ADMIN` | Cadastrar/editar/ativar igrejas e criar contas `CHURCH_ADMIN`; não acessa os dados operacionais das igrejas |
+| `CHURCH_ADMIN` | Gerenciar filiais e os módulos operacionais da própria igreja; pode criar acesso de voluntário ao cadastrar a pessoa |
+| `VOLUNTEER` | Consultar apenas suas escalas, confirmar/recusar e alterar apenas a própria disponibilidade |
+
+O escopo de igreja é aplicado também nos Services/Repositories: IDs recebidos em rotas são buscados junto ao `church_id` do principal autenticado. A interface adaptar o menu por perfil melhora a experiência, mas não substitui essa validação no backend. O SUPER_ADMIN recebe 403 ao tentar abrir as APIs operacionais.
+
+### Criação inicial segura
+
+`DataSeeder` implementa `CommandLineRunner` e só cria usuários quando `app_users` está vazio (e `SEED_ENABLED` não está desligado). A migração V4 cria a igreja Poiema e a filial Sede como base para migrar registros locais antigos; o seeder reutiliza essa organização e cria:
+
+- SUPER_ADMIN: `admin@sistema.com`
+- CHURCH_ADMIN: `lider@poiema.com`
+
+Para desenvolvimento, as senhas padrão são `admin123` e `poiema123`; ambas são imediatamente transformadas em BCrypt. Elas podem ser substituídas por `SEED_SUPER_ADMIN_PASSWORD` e `SEED_CHURCH_ADMIN_PASSWORD`. Troque as senhas e o segredo JWT antes de qualquer implantação; para impedir o seed, use `SEED_ENABLED=false`.
+
+### Arquivos novos/alterados principais
+
+- `identity/AppUser.java`, `UserRole.java`, `AppUserRepository.java`: conta, papéis e consulta por e-mail.
+- `identity/AuthController.java`, `AuthService.java`, `LoginRequest.java`, `LoginResponse.java`: endpoint e contrato de login.
+- `security/JwtTokenService.java`, `JwtAuthenticationFilter.java`, `TenantPrincipal.java`, `SecurityUser.java`: assinatura, validação do token e contexto de autorização/igreja.
+- `security/SecurityConfiguration.java`: BCrypt, CORS, sessões stateless e regras por rota.
+- `identity/DataSeeder.java`: criação idempotente das contas iniciais.
+- `organization/Church.java`, `Branch.java`, seus Repository/Controller/Service e DTOs: matriz, filiais e administração.
+- `VolunteerService.java`, `MinistryService.java`, `ScheduleService.java`: filtragem por igreja e permissões no servidor.
+- `V4__churches_users_and_tenant_scope.sql`: tabelas de igreja/filial/conta e backfill do banco legado; `V5` muda nomes de ministérios para unicidade por igreja.
+- `frontend/src/features/auth/AuthContext.tsx`, `LoginPage.tsx`: sessão e tela de entrada.
+- `features/organization/PlatformAdminPage.tsx`, `BranchesPage.tsx`: painel de plataforma e gestão de filiais.
+- `features/volunteer-portal/VolunteerPortal.tsx`: escalas próprias e disponibilidade.
+- `App.tsx`: proteção visual e navegação conforme o papel.
+
+## Como validar os perfis manualmente no Insomnia
+
+1. Faça login com `POST /api/v1/auth/login`, corpo `{"email":"lider@poiema.com","senha":"poiema123"}`, e copie `token`.
+2. Em cada rota protegida, envie `Authorization: Bearer <token>`. O login e `GET /api/v1/health` são as únicas exceções públicas.
+3. Como CHURCH_ADMIN, crie voluntário. Para criar também login, inclua e-mail e `senhaInicial` (mínimo 8 caracteres); a resposta nunca contém o hash.
+4. Faça login como o voluntário e chame `GET /api/v1/schedules/mine`; tente confirmar uma escala de outro ID e confira que não pode.
+5. Faça login como SUPER_ADMIN e use `GET/POST /api/v1/churches`; crie uma igreja e depois `POST /api/v1/churches/{id}/admins`.
+6. Use um token de outra igreja para consultar um ID de dados operacionais da Poiema; a consulta deve retornar 404 porque o recurso fora do escopo não é encontrado.
 
 ## Rotas do módulo de Ministérios
 
@@ -217,4 +281,4 @@ O JSON para criar ou editar um ministério é `{"nome":"Louvor","descricao":"Mú
 
 ## Observações sobre o ambiente
 
-O CORS aceita somente `http://localhost:5173`, e os endpoints de voluntários, ministérios, eventos e escalas estão temporariamente sem autenticação para desenvolvimento. CORS não impede clientes como Insomnia ou chamadas servidor-a-servidor. Mantenha o backend local e substitua essa configuração por autenticação/autorização antes de publicar.
+O CORS aceita somente `http://localhost:5173`. O login e health check são públicos; as demais rotas requerem Bearer JWT. CORS não impede clientes como Insomnia ou chamadas servidor-a-servidor. O segredo de desenvolvimento e as senhas de seed devem ser trocados antes de publicar.

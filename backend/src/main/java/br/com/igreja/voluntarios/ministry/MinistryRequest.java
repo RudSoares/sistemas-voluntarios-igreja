@@ -9,5 +9,6 @@ public record MinistryRequest(
         String nome,
 
         @Size(max = 2000, message = "A descrição deve ter no máximo 2000 caracteres.")
-        String descricao) {
+        String descricao,
+        Long branchId) {
 }

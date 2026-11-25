@@ -4,6 +4,11 @@ import { MinistriesPage } from './features/ministries/MinistriesPage'
 import { EventsPage } from './features/schedule/EventsPage'
 import { SchedulesPage } from './features/schedule/SchedulesPage'
 import { DashboardPage } from './features/dashboard/DashboardPage'
+import { useAuth } from './features/auth/AuthContext'
+import { LoginPage } from './features/auth/LoginPage'
+import { PlatformAdminPage } from './features/organization/PlatformAdminPage'
+import { BranchesPage } from './features/organization/BranchesPage'
+import { VolunteerPortal } from './features/volunteer-portal/VolunteerPortal'
 import './App.css'
 
 const sections = [
@@ -12,6 +17,7 @@ const sections = [
   { id: 'ministerios', label: 'Ministérios', symbol: '✳' },
   { id: 'agenda', label: 'Cultos e eventos', symbol: '▦' },
   { id: 'escalas', label: 'Escalas', symbol: '☷' },
+  { id: 'filiais', label: 'Filiais', symbol: '⌂' },
 ] as const
 
 type SectionId = (typeof sections)[number]['id']
@@ -20,6 +26,7 @@ type VolunteerForm = Omit<VolunteerPayload, 'telefone' | 'email' | 'observacoes'
   telefone: string
   email: string
   observacoes: string
+  senhaInicial: string
 }
 
 const suggestedAvailability = ['DOMINGO_MANHA', 'DOMINGO_NOITE', 'QUARTA_NOITE']
@@ -40,6 +47,7 @@ function emptyForm(): VolunteerForm {
     email: '',
     disponibilidadeDias: [],
     observacoes: '',
+    senhaInicial: '',
   }
 }
 
@@ -50,20 +58,23 @@ function formFromVolunteer(volunteer: Volunteer): VolunteerForm {
     email: volunteer.email ?? '',
     disponibilidadeDias: volunteer.disponibilidadeDias,
     observacoes: volunteer.observacoes ?? '',
+    senhaInicial: '',
   }
 }
 
-function toPayload(form: VolunteerForm): VolunteerPayload {
+function toPayload(form: VolunteerForm, createAccess = false): VolunteerPayload {
   return {
     nomeCompleto: form.nomeCompleto.trim(),
     telefone: form.telefone.trim() || null,
     email: form.email.trim() || null,
     disponibilidadeDias: [...new Set(form.disponibilidadeDias.map((day) => day.trim()).filter(Boolean))],
     observacoes: form.observacoes.trim() || null,
+    senhaInicial: createAccess && form.senhaInicial.trim() ? form.senhaInicial : undefined,
   }
 }
 
 function App() {
+  const { user, logout } = useAuth()
   const [activeSection, setActiveSection] = useState<SectionId>('inicio')
   const [theme, setTheme] = useState<Theme>(() => {
     try {
@@ -97,8 +108,8 @@ function App() {
   }, [])
 
   useEffect(() => {
-    void loadVolunteers()
-  }, [loadVolunteers])
+    if (user?.role === 'CHURCH_ADMIN') void loadVolunteers()
+  }, [loadVolunteers, user?.role])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -167,7 +178,7 @@ function App() {
     setActionError(null)
     setIsSaving(true)
     try {
-      const payload = toPayload(form)
+      const payload = toPayload(form, !editingVolunteer)
       if (editingVolunteer) {
         await volunteerApi.update(editingVolunteer.id, payload)
       } else {
@@ -195,6 +206,24 @@ function App() {
     }
   }
 
+  function toggleTheme() {
+    setTheme((current) => current === 'light' ? 'dark' : 'light')
+  }
+
+  if (!user) return <LoginPage theme={theme} onToggleTheme={toggleTheme} />
+  if (user.role === 'VOLUNTEER') return <VolunteerPortal theme={theme} onToggleTheme={toggleTheme} />
+
+  if (user.role === 'SUPER_ADMIN') {
+    return <div className="app-shell" data-theme={theme}>
+      <aside className="sidebar">
+        <a className="brand" href="#igrejas"><span className="brand-mark" aria-hidden="true">V</span><span className="brand-copy"><strong>Voluntários</strong><small>Administração da plataforma</small></span></a>
+        <div className="nav-caption">PLATAFORMA</div><nav aria-label="Navegação principal"><button aria-current="page" className="nav-item is-active" type="button"><span className="nav-symbol" aria-hidden="true">⌂</span><span>Igrejas</span></button></nav>
+        <button className="logout-button" onClick={logout} type="button">↪ <span>Sair (Logout)</span></button>
+      </aside>
+      <main className="main-content"><header className="topbar"><div className="breadcrumb">Plataforma <span>/</span> Igrejas</div><div className="topbar-actions"><button aria-label={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'} aria-pressed={theme === 'dark'} className="theme-toggle" onClick={toggleTheme} type="button"><span aria-hidden="true">{theme === 'light' ? '☾' : '☀'}</span>{theme === 'light' ? 'Modo escuro' : 'Modo claro'}</button><div className="environment-label"><span /> {user.nome}</div></div></header><section className="page-content"><PlatformAdminPage /><footer className="page-footer">Sistema de gestão de voluntários · Administração da plataforma</footer></section></main>
+    </div>
+  }
+
   return (
     <div className="app-shell" data-theme={theme}>
       <aside className="sidebar">
@@ -208,7 +237,7 @@ function App() {
 
         <div className="nav-caption">MENU</div>
         <nav aria-label="Navegação principal">
-          {sections.map((section) => (
+          {sections.filter(section => section.id !== 'filiais' || user.role === 'CHURCH_ADMIN').map((section) => (
             <button
               aria-current={activeSection === section.id ? 'page' : undefined}
               className={`nav-item ${activeSection === section.id ? 'is-active' : ''}`}
@@ -229,6 +258,7 @@ function App() {
           <span className="note-dot" aria-hidden="true" />
           <span>Módulos em desenvolvimento</span>
         </div>
+        <button className="logout-button" onClick={logout} type="button">↪ <span>Sair (Logout)</span></button>
       </aside>
 
       <main className="main-content">
@@ -239,7 +269,7 @@ function App() {
               aria-label={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
               aria-pressed={theme === 'dark'}
               className="theme-toggle"
-              onClick={() => setTheme((current) => current === 'light' ? 'dark' : 'light')}
+              onClick={toggleTheme}
               type="button"
             >
               <span aria-hidden="true">{theme === 'light' ? '☾' : '☀'}</span>
@@ -258,6 +288,8 @@ function App() {
             <EventsPage />
           ) : activeSection === 'escalas' ? (
             <SchedulesPage />
+          ) : activeSection === 'filiais' ? (
+            <BranchesPage />
           ) : activeSection === 'voluntarios' ? (
             <>
               <div className="page-heading">
@@ -312,6 +344,20 @@ function App() {
                         value={form.telefone}
                       />
                     </label>
+                    {!editingVolunteer && (
+                      <label className="field field-full">
+                        <span>Senha inicial para acesso do voluntário (opcional, mínimo 8 caracteres)</span>
+                        <input
+                          autoComplete="new-password"
+                          minLength={8}
+                          maxLength={72}
+                          onChange={(event) => setForm((current) => ({ ...current, senhaInicial: event.target.value }))}
+                          placeholder="Deixe em branco para não criar login agora"
+                          type="password"
+                          value={form.senhaInicial}
+                        />
+                      </label>
+                    )}
                     <label className="field">
                       <span>E-mail</span>
                       <input

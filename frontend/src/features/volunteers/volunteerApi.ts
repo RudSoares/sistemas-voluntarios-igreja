@@ -18,6 +18,8 @@ export type VolunteerPayload = {
   email: string | null
   disponibilidadeDias: string[]
   observacoes: string | null
+  branchId?: number | null
+  senhaInicial?: string
 }
 
 export const volunteerApi = {
@@ -31,4 +33,9 @@ export const volunteerApi = {
 
   updateStatus: (id: number, ativo: boolean) =>
     request<Volunteer>(`${VOLUNTEERS_PATH}/${id}/status`, jsonRequest('PATCH', { ativo })),
+
+  me: () => request<Volunteer>(VOLUNTEERS_PATH + '/me'),
+
+  updateMyAvailability: (disponibilidadeDias: string[]) =>
+    request<Volunteer>(VOLUNTEERS_PATH + '/me/availability', jsonRequest('PATCH', { disponibilidadeDias })),
 }
